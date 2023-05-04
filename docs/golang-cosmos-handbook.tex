@@ -323,8 +323,6 @@ func main() {
 \end{minted}
 \end{itemize}
 
-These are the essential elements of Golang, including data types, control structures, functions, interfaces, error handling, and concurrency. In the following chapters, we will dive into the details of the Cosmos SDK, learn how to create custom modules, and explore the Inter-Blockchain Communication (IBC) protocol. We will also discuss practical programming, testing, deploying, and working with tools analogous to Hardhat, Web3.js, and Ganache in the Cosmos ecosystem.
-
 \subsection{Golang packages and modules}
 
 \subsubsection{Packages}
@@ -663,7 +661,7 @@ In the Cosmos SDK, modules are the building blocks that define the functionality
 
 To illustrate these concepts, let's consider an example of creating a simple NFT module. First, we would define the NFT type within a file named nft.go in the types folder:
 
-\begin{lstlisting}[language=Golang]
+\begin{lstlisting}[language=Go]
 package types
 
 type NFT struct {
@@ -675,7 +673,7 @@ Metadata string
 
 Next, we would define the messages for creating and transferring NFTs within a file named msgs.go in the types folder:
 
-\begin{lstlisting}[language=Golang]
+\begin{lstlisting}[language=Go]
 package types
 
 type MsgCreateNFT struct {
@@ -692,7 +690,7 @@ NFTID string
 
 Finally, we would define the events for NFT creation and transfer within a file named events.go in the types folder:
 
-\begin{lstlisting}[language=Golang]
+\begin{lstlisting}[language=Go]
 package types
 
 type EventCreateNFT struct {
@@ -714,7 +712,7 @@ Handlers and keepers are essential components of a Cosmos SDK module, responsibl
 
 \textbf{Handlers:} A handler is a function that processes messages and updates the module's state accordingly. To implement a handler, create a new Golang function in the module's handler.go file. This function should have the following signature:
 
-\begin{lstlisting}[language=Golang]
+\begin{lstlisting}[language=Go]
 func NewHandler(k Keeper) sdk.Handler {
 // Handler implementation
 }
@@ -722,7 +720,7 @@ func NewHandler(k Keeper) sdk.Handler {
 
 Within the handler, use a switch statement to process each message type and call the corresponding keeper methods to update the state. Also, emit relevant events to notify external systems about state changes. For example, a handler for the NFT module we defined in the previous section might look like this:
 
-\begin{lstlisting}[language=Golang]
+\begin{lstlisting}[language=Go]
 package nft
 
 func NewHandler(k Keeper) sdk.Handler {
@@ -743,7 +741,7 @@ return nil, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, "unrecognized NFT messag
 
 To define a keeper, create a new Golang struct in the module's keeper folder and define methods that interact with the module's store. For example, a keeper for the NFT module might look like this:
 
-\begin{lstlisting}[language=Golang]
+\begin{lstlisting}[language=Go]
 package keeper
 
 type Keeper struct {
@@ -763,14 +761,299 @@ func (k Keeper) TransferNFT(ctx sdk.Context, sender sdk.AccAddress, recipient sd
 Handlers and keepers are critical components of a custom module, providing the means to process messages and manage the module's state. By implementing these components, developers can define custom logic and create blockchain applications tailored to specific use cases.
 %
 \subsection{Module migration and versioning}
+
+As blockchain applications evolve, it is crucial to maintain compatibility with previous versions and update the state and logic of modules. Module migration and versioning are essential aspects of the Cosmos SDK that allow developers to manage these updates. In this section, we will discuss how to handle module migrations and versioning in a Cosmos SDK application.
+
+\textbf{Module versioning:} Each module in the Cosmos SDK has a version number that indicates its compatibility with the application state. When creating a new module, it is essential to define an initial version number in the module's types/version.go file. This version number should be incremented when breaking changes are introduced, ensuring that any migration processes are executed correctly.
+
+\begin{lstlisting}[language=Go]
+package types
+
+const (
+// ModuleName is the name of the module
+ModuleName = "mymodule"
+
+// StoreKey is the store key string for mymodule
+StoreKey = ModuleName
+
+// RouterKey is the message route for mymodule
+RouterKey = ModuleName
+
+// QuerierRoute is the querier route for mymodule
+QuerierRoute = ModuleName
+
+// DefaultParamspace is the default name for the parameter store
+DefaultParamspace = ModuleName
+
+// Version is the module's version number
+Version = 1
+)
+\end{lstlisting}
+
+\textbf{Module migration:} When a module's version is updated, it is necessary to implement a migration function that upgrades the module's state to be compatible with the new version. This migration function should be defined in the module's migration.go file and registered with the application's migration manager during the application initialization process.
+
+The migration function should have the following signature:
+
+\begin{lstlisting}[language=Go]
+func Migrate(ctx sdk.Context, k Keeper, oldVersion uint64) error {
+// Migration implementation
+}
+\end{lstlisting}
+
+Within the migration function, implement the necessary logic to upgrade the module's state from the old version to the new version. For example, this may involve updating the data structure of stored items, removing deprecated items, or adding new items to the store.
+
+When the application is upgraded, the migration manager will execute the registered migration functions for each module, ensuring that the application state is updated to be compatible with the new module versions.
+
+Module migration and versioning are vital aspects of the Cosmos SDK that enable developers to manage updates to their blockchain applications. By properly implementing and registering migration functions, developers can ensure that their applications remain compatible with new module versions and avoid potential issues during the upgrade process.
+
 \subsection{Integrating custom modules with a Cosmos SDK application}
+
+After implementing a custom module with its types, messages, events, handlers, and keepers, the next step is to integrate it into your Cosmos SDK application. In this section, we will discuss the process of integrating custom modules with a Cosmos SDK application.
+
+\textbf{1. Import the custom module:} First, import the custom module into your application's app.go file. Add the import statement at the beginning of the file, along with the other module imports.
+
+\begin{lstlisting}[language=Go]
+import (
+// ...
+"github.com/yourusername/yourapp/x/mymodule"
+)
+\end{lstlisting}
+
+\textbf{2. Define the AppModule:} Create an instance of the AppModule for your custom module in the app.go file. The AppModule is responsible for managing the module's lifecycle within the application.
+
+\begin{lstlisting}[language=Go]
+mymoduleAppModule := mymodule.NewAppModule(appCodec, app.MymoduleKeeper)
+\end{lstlisting}
+
+\textbf{3. Register the AppModule:} Register the AppModule with the application's ModuleManager. This ensures that the module is initialized, started, and managed by the application.
+
+\begin{lstlisting}[language=Go]
+app.mm = module.NewManager(
+// ...
+mymoduleAppModule,
+)
+\end{lstlisting}
+
+\textbf{4. Add the module's keys:} Add the module's key to the application's key manager in the app.go file. This allows the module to access its store within the application state.
+
+\begin{lstlisting}[language=Go]
+app.MymoduleKey = sdk.NewKVStoreKey(mymodule.StoreKey)
+app.MemKeys[mymodule.ModuleName] = sdk.NewMemoryStoreKey(mymodule.ModuleName)
+\end{lstlisting}
+
+\textbf{5. Initialize the module's keeper:} Initialize the module's keeper in the app.go file. This step is essential to allow the module to interact with its store and manage its state.
+
+\begin{lstlisting}[language=Go]
+app.MymoduleKeeper = mymodule.NewKeeper(
+appCodec, app.MymoduleKey, app.AccountKeeper, app.BankKeeper,
+)
+\end{lstlisting}
+
+\textbf{6. Register the module's routes:} Register the module's message routes and querier routes in the app.go file. This step ensures that the application can handle the module's messages and queries.
+
+\begin{lstlisting}[language=Go]
+app.Router().AddRoute(mymodule.RouterKey, mymodule.NewHandler(app.MymoduleKeeper))
+app.QueryRouter().AddRoute(mymodule.QuerierRoute, mymodule.NewQuerier(app.MymoduleKeeper))
+\end{lstlisting}
+
+By following these steps, you can successfully integrate a custom module into your Cosmos SDK application. Once the custom module is integrated, the application can manage the module's lifecycle, process its messages and queries, and interact with its state. This allows developers to extend the functionality of their blockchain applications by adding custom modules tailored to their specific requirements.
 
 \section{Inter-Blockchain Communication (IBC)}
 
 \subsection{Overview of IBC architecture and concepts}
+
+The Inter-Blockchain Communication (IBC) protocol is a crucial component of the Cosmos ecosystem, enabling interoperability between different blockchains. In this section, we will discuss the core concepts and architecture of the IBC protocol, using examples from the Carbon-Cosmos project.
+
+\textbf{1. Clients:} Clients are light clients of other chains within the IBC ecosystem. They track the consensus state of remote chains and verify the authenticity of data received from those chains. Clients help establish a secure communication channel between two chains.
+
+\begin{lstlisting}[language=Go]
+// From carboncredit/interchainnft/keeper/ibc.go
+func (k Keeper) OnRecvPacket(ctx sdk.Context, packet channeltypes.Packet, data types.NFTPacketData) error {
+// Validate the packet data and use the packet.ClientID to verify the data from the other chain
+}
+\end{lstlisting}
+
+\textbf{2. Connections:} Connections are established between two chains by setting up a pair of light clients, one on each chain. A connection ensures that both chains can trust the data they receive from each other.
+
+\begin{lstlisting}[language=Go]
+// From carboncredit/interchainnft/keeper/ibc.go
+func (k Keeper) OnAcknowledgementPacket(ctx sdk.Context, packet channeltypes.Packet, data types.NFTPacketData, ack channeltypes.Acknowledgement) error {
+// Acknowledge the packet and process the data accordingly, relying on the secure connection
+}
+\end{lstlisting}
+
+\textbf{3. Channels:} Channels are built on top of connections, providing a secure and ordered communication pathway between two chains. Channels handle data packets and can enforce ordering guarantees, ensuring that packets are processed in the order they were sent.
+
+\begin{lstlisting}[language=Go]
+// From carboncredit/interchainnft/keeper/ibc.go
+func (k Keeper) SendNFTPacket(ctx sdk.Context, nftID string, srcPort, srcChannel string, timeoutHeight clienttypes.Height, timeoutTimestamp uint64, nft types.BaseNFT) error {
+// Create a new NFTPacketData and send it through the specified channel
+}
+\end{lstlisting}
+
+By understanding these IBC concepts and how they are implemented in the Carbon-Cosmos project, you can build applications that leverage the power of interoperability and communication between different blockchains in the Cosmos ecosystem.
+
 \subsection{IBC modules, channels, and packets}
+
+In this section, we will delve deeper into IBC modules, channels, and packets, using examples from the Carbon-Cosmos project. These components facilitate the transfer of data between different blockchains in the Cosmos ecosystem.
+
+\textbf{1. IBC modules:} IBC modules are custom modules that implement the IBC protocol in a Cosmos SDK application. They handle the logic related to cross-chain communication, such as sending and receiving packets, and managing channels and connections.
+
+In Carbon-Cosmos, the interchainnft module is an IBC module that allows the transfer of NFTs between different chains.
+
+\begin{lstlisting}[language=Go]
+// From carboncredit/interchainnft/types/msgs.go
+type MsgSendNFT struct {
+NFTID string json:"nft_id" yaml:"nft_id"
+Sender sdk.AccAddress json:"sender" yaml:"sender"
+Recipient sdk.AccAddress json:"recipient" yaml:"recipient"
+SourcePort string json:"source_port" yaml:"source_port"
+SourceChannel string json:"source_channel" yaml:"source_channel"
+}
+\end{lstlisting}
+
+\textbf{2. Channels:} Channels provide a secure and ordered communication pathway between two chains. They are built on top of connections and are responsible for handling data packets. Channels can enforce ordering guarantees to ensure that packets are processed in the order they were sent.
+
+\begin{lstlisting}[language=Go]
+// From carboncredit/interchainnft/keeper/ibc.go
+func (k Keeper) SendNFTPacket(ctx sdk.Context, nftID string, srcPort, srcChannel string, timeoutHeight clienttypes.Height, timeoutTimestamp uint64, nft types.BaseNFT) error {
+// Create a new NFTPacketData and send it through the specified channel
+}
+\end{lstlisting}
+
+\textbf{3. Packets:} Packets are the units of data sent between chains using IBC channels. They contain the actual data being transferred and metadata such as a sequence number, timeout height, and timeout timestamp. Packets can be acknowledged or timed out, allowing applications to handle different scenarios, such as refunds or retries.
+
+\begin{lstlisting}[language=Go]
+// From carboncredit/interchainnft/types/packet.go
+type NFTPacketData struct {
+NFTID string json:"nft_id" yaml:"nft_id"
+TokenURI string json:"token_uri" yaml:"token_uri"
+Sender string json:"sender" yaml:"sender"
+Recipient string json:"recipient" yaml:"recipient"
+}
+\end{lstlisting}
+
+By understanding and implementing IBC modules, channels, and packets in your Cosmos SDK application, you can enable seamless communication and data transfer between different blockchains, harnessing the full potential of the Cosmos ecosystem.
+
+
 \subsection{Implementing IBC logic in a custom module}
+
+Implementing IBC logic in a custom module involves defining the IBC packet data structure, creating messages for sending packets, and handling packets in the module's keeper. In this section, we will walk through these steps using the interchainnft module from the Carbon-Cosmos project as an example.
+
+\textbf{1. Define IBC packet data structure:} First, define the IBC packet data structure for your custom module. This structure should contain the data you want to transfer between chains.
+
+In the interchainnft module, the NFTPacketData structure is used to transfer NFTs.
+
+\begin{lstlisting}[language=Go]
+// From carboncredit/interchainnft/types/packet.go
+type NFTPacketData struct {
+NFTID string json:"nft_id" yaml:"nft_id"
+TokenURI string json:"token_uri" yaml:"token_uri"
+Sender string json:"sender" yaml:"sender"
+Recipient string json:"recipient" yaml:"recipient"
+}
+\end{lstlisting}
+
+\textbf{2. Create messages for sending packets:} Next, create messages that allow users to send IBC packets from your custom module. These messages should include the necessary information to initiate the packet transfer.
+
+In the interchainnft module, the MsgSendNFT message is used for this purpose.
+
+\begin{lstlisting}[language=Go]
+// From carboncredit/interchainnft/types/msgs.go
+type MsgSendNFT struct {
+NFTID string json:"nft_id" yaml:"nft_id"
+Sender sdk.AccAddress json:"sender" yaml:"sender"
+Recipient sdk.AccAddress json:"recipient" yaml:"recipient"
+SourcePort string json:"source_port" yaml:"source_port"
+SourceChannel string json:"source_channel" yaml:"source_channel"
+}
+\end{lstlisting}
+
+\textbf{3. Handle packets in the module's keeper:} Finally, implement the necessary functions in your custom module's keeper to handle sending and receiving packets, as well as acknowledgements and timeouts.
+
+In the interchainnft module, the SendNFTPacket function sends NFT packets, while the OnRecvNFTPacket function handles received NFT packets.
+
+\begin{lstlisting}[language=Go]
+// From carboncredit/interchainnft/keeper/ibc.go
+func (k Keeper) SendNFTPacket(ctx sdk.Context, nftID string, srcPort, srcChannel string, timeoutHeight clienttypes.Height, timeoutTimestamp uint64, nft types.BaseNFT) error {
+// Create a new NFTPacketData and send it through the specified channel
+}
+
+func (k Keeper) OnRecvNFTPacket(ctx sdk.Context, packet channeltypes.Packet, data types.NFTPacketData) error {
+// Process the received NFTPacketData and update the module's state
+}
+\end{lstlisting}
+
+By following these steps, you can implement IBC logic in your custom Cosmos SDK module, enabling cross-chain communication and data transfer in your application.
+
 \subsection{Practical examples: ICS-20 and ICS-721}
+
+ICS-20 and ICS-721 are two practical examples of the Inter-Blockchain Communication (IBC) protocol in action. ICS-20 is a token transfer standard for fungible tokens, while ICS-721 is an extension of IBC for non-fungible tokens (NFTs). In this section, we will discuss how these standards are applied in the Carbon-Cosmos project.
+
+\textbf{ICS-20:} The Carbon-Cosmos project does not implement ICS-20 directly, as it primarily deals with NFTs representing carbon credits. However, ICS-20 serves as a reference for creating custom IBC modules like the one in Carbon-Cosmos. You can find more information about ICS-20 in the Cosmos SDK's ibc-transfer module, which handles the transfer of fungible tokens across chains.
+
+\textbf{ICS-721:} The interchainnft module in Carbon-Cosmos is an example of an ICS-721 implementation for NFTs. This module allows the transfer of NFTs between different chains in the Cosmos ecosystem, enabling cross-chain interactions for carbon credit NFTs.
+
+Here are the main components of the interchainnft module that enable ICS-721 functionality:
+
+\textbf{1. NFTPacketData:} This data structure defines the information to be transferred between chains as an IBC packet.
+
+\begin{lstlisting}[language=Go]
+// From carboncredit/interchainnft/types/packet.go
+type NFTPacketData struct {
+NFTID string json:"nft_id" yaml:"nft_id"
+TokenURI string json:"token_uri" yaml:"token_uri"
+Sender string json:"sender" yaml:"sender"
+Recipient string json:"recipient" yaml:"recipient"
+}
+\end{lstlisting}
+
+\textbf{2. MsgSendNFT:} This message type allows users to initiate the transfer of an NFT between chains.
+
+\begin{lstlisting}[language=Go]
+// From carboncredit/interchainnft/types/msgs.go
+type MsgSendNFT struct {
+NFTID string json:"nft_id" yaml:"nft_id"
+Sender sdk.AccAddress json:"sender" yaml:"sender"
+Recipient sdk.AccAddress json:"recipient" yaml:"recipient"
+SourcePort string json:"source_port" yaml:"source_port"
+SourceChannel string json:"source_channel" yaml:"source_channel"
+}
+\end{lstlisting}
+
+\textbf{3. Keeper functions:} The interchainnft module's keeper includes functions to handle IBC packets, acknowledgements, and timeouts, such as SendNFTPacket and OnRecvNFTPacket.
+
+\begin{lstlisting}[language=Go]
+// From carboncredit/interchainnft/keeper/ibc.go
+func (k Keeper) SendNFTPacket(ctx sdk.Context, nftID string, srcPort, srcChannel string, timeoutHeight clienttypes.Height, timeoutTimestamp uint64, nft types.BaseNFT) error {
+// Create a new NFTPacketData and send it through the specified channel
+}
+
+func (k Keeper) OnRecvNFTPacket(ctx sdk.Context, packet channeltypes.Packet, data types.NFTPacketData) error {
+// Process the received NFTPacketData and update the module's state
+}
+\end{lstlisting}
+
+By implementing these components, the Carbon-Cosmos project demonstrates how to use IBC standards like ICS-721 to enable cross-chain functionality for custom applications.
+
+\textbf{4. IBC client and CLI:} To interact with the IBC functionalities provided by the interchainnft module, Carbon-Cosmos includes a client and CLI commands. The tx.go and query.go files under carboncredit/interchainnft/client/cli contain the necessary code for sending and querying NFT transfers.
+
+\begin{lstlisting}[language=Go]
+// From carboncredit/interchainnft/client/cli/tx.go
+func CmdSendNFT() *cobra.Command {
+// Define a new command for sending NFTs via IBC
+}
+
+// From carboncredit/interchainnft/client/cli/query.go
+func CmdQueryNFT() *cobra.Command {
+// Define a new command for querying NFTs via IBC
+}
+\end{lstlisting}
+
+These examples demonstrate how ICS-20 and ICS-721 standards can be applied to the Carbon-Cosmos project. By understanding the implementation of these standards, developers can create custom IBC modules for their own applications and enable seamless cross-chain interactions.
+
+
+
 
 \section{Smart Contract Development in Cosmos Ecosystem}
 
