@@ -1,20 +1,34 @@
 use cosmwasm_std::{
-    to_binary, Api, Binary, Env, Extern, HandleResponse, InitResponse, Querier, StdError,
-    StdResult, Storage,
+    to_binary,
+    Api,
+    Binary,
+    Env,
+    Extern,
+    HandleResponse,
+    InitResponse,
+    Querier,
+    StdError,
+    StdResult,
+    Storage,
 };
-use cosmwasm_storage::{PrefixedStorage, ReadonlyPrefixedStorage};
+use cosmwasm_storage::{ PrefixedStorage, ReadonlyPrefixedStorage };
 use std::str::from_utf8;
 
-use crate::msg::{HandleMsg, InitMsg, OffsetTransactionResponse, QueryMsg};
+use crate::msg::{ HandleMsg, InitMsg, OffsetTransactionResponse, QueryMsg };
 use crate::state::{
-    config, config_read, create_transaction_id, store_transaction, CarbonCreditsPool,
-    Transaction, CONFIG_KEY,
+    config,
+    config_read,
+    create_transaction_id,
+    store_transaction,
+    CarbonCreditsPool,
+    Transaction,
+    CONFIG_KEY,
 };
 
 pub fn init<S: Storage, A: Api, Q: Querier>(
     deps: &mut Extern<S, A, Q>,
     _env: Env,
-    msg: InitMsg,
+    msg: InitMsg
 ) -> StdResult<InitResponse> {
     let config_data = config::Config {
         carbon_credits_pool: msg.carbon_credits_pool.clone(),
@@ -28,7 +42,7 @@ pub fn init<S: Storage, A: Api, Q: Querier>(
 pub fn handle<S: Storage, A: Api, Q: Querier>(
     deps: &mut Extern<S, A, Q>,
     env: Env,
-    msg: HandleMsg,
+    msg: HandleMsg
 ) -> StdResult<HandleResponse> {
     match msg {
         HandleMsg::OffsetTransaction {
@@ -38,16 +52,17 @@ pub fn handle<S: Storage, A: Api, Q: Querier>(
             offset_type,
             offset_amount,
             carbon_credit_type,
-        } => handle_offset_transaction(
-            deps,
-            env,
-            receiver_address,
-            amount,
-            receiver_network,
-            offset_type,
-            offset_amount,
-            carbon_credit_type,
-        ),
+        } =>
+            handle_offset_transaction(
+                deps,
+                env,
+                receiver_address,
+                amount,
+                receiver_network,
+                offset_type,
+                offset_amount,
+                carbon_credit_type
+            ),
         HandleMsg::BurnCarbonCredits { amount, carbon_credit_type } => {
             handle_burn_carbon_credits(deps, amount, carbon_credit_type)
         }
@@ -60,7 +75,7 @@ pub fn handle<S: Storage, A: Api, Q: Querier>(
 pub fn query<S: Storage, A: Api, Q: Querier>(
     deps: &Extern<S, A, Q>,
     _env: Env,
-    msg: QueryMsg,
+    msg: QueryMsg
 ) -> StdResult<Binary> {
     match msg {
         QueryMsg::CarbonCreditsPool {} => to_binary(&query_carbon_credits_pool(deps)?),
@@ -78,7 +93,7 @@ fn handle_offset_transaction<S: Storage, A: Api, Q: Querier>(
     receiver_network: u32,
     offset_type: OffsetType,
     offset_amount: Option<f64>,
-    carbon_credit_type: String,
+    carbon_credit_type: String
 ) -> StdResult<HandleResponse> {
     // Perform transaction offset logic
     // ...
@@ -103,11 +118,10 @@ fn handle_offset_transaction<S: Storage, A: Api, Q: Querier>(
 fn handle_burn_carbon_credits<S: Storage, A: Api, Q: Querier>(
     deps: &mut Extern<S, A, Q>,
     amount: u128,
-    carbon_credit_type: String,
+    carbon_credit_type: String
 ) -> StdResult<HandleResponse> {
     let mut config_data = config_read(deps.storage).load()?;
-    let carbon_credit = config_data
-        .carbon_credits_pool
+    let carbon_credit = config_data.carbon_credits_pool
         .iter_mut()
         .find(|credit| credit.carbon_credit_type == carbon_credit_type);
 
@@ -119,9 +133,7 @@ fn handle_burn_carbon_credits<S: Storage, A: Api, Q: Querier>(
             credit.balance -= amount;
         }
         None => {
-            return Err(StdError::generic_err(
-                "Carbon credit type not found in the pool.",
-            ));
+            return Err(StdError::generic_err("Carbon credit type not found in the pool."));
         }
     }
 
@@ -132,11 +144,10 @@ fn handle_burn_carbon_credits<S: Storage, A: Api, Q: Querier>(
 fn handle_add_carbon_credits_to_pool<S: Storage, A: Api, Q: Querier>(
     deps: &mut Extern<S, A, Q>,
     amount: u128,
-    carbon_credit_type: String,
+    carbon_credit_type: String
 ) -> StdResult<HandleResponse> {
     let mut config_data = config_read(deps.storage).load()?;
-    let carbon_credit = config_data
-        .carbon_credits_pool
+    let carbon_credit = config_data.carbon_credits_pool
         .iter_mut()
         .find(|credit| credit.carbon_credit_type == carbon_credit_type);
 
@@ -145,9 +156,7 @@ fn handle_add_carbon_credits_to_pool<S: Storage, A: Api, Q: Querier>(
             credit.balance += amount;
         }
         None => {
-            return Err(StdError::generic_err(
-                "Carbon credit type not found in the pool.",
-            ));
+            return Err(StdError::generic_err("Carbon credit type not found in the pool."));
         }
     }
 
@@ -156,7 +165,7 @@ fn handle_add_carbon_credits_to_pool<S: Storage, A: Api, Q: Querier>(
 }
 
 fn query_carbon_credits_pool<S: Storage, A: Api, Q: Querier>(
-    deps: &Extern<S, A, Q>,
+    deps: &Extern<S, A, Q>
 ) -> StdResult<Vec<CarbonCreditsPool>> {
     let config_data = config_read(deps.storage).load()?;
     Ok(config_data.carbon_credits_pool)
@@ -164,14 +173,16 @@ fn query_carbon_credits_pool<S: Storage, A: Api, Q: Querier>(
 
 fn query_offset_transaction<S: Storage, A: Api, Q: Querier>(
     deps: &Extern<S, A, Q>,
-    transaction_id: String,
+    transaction_id: String
 ) -> StdResult<OffsetTransactionResponse> {
     let tx_store = ReadonlyPrefixedStorage::new(CONFIG_KEY, deps.storage);
     let data = tx_store.get(transaction_id.as_bytes());
     let transaction = match data {
-        Some(data) => from_utf8(&data)
-            .map_err(|_| StdError::generic_err("Error parsing transaction data"))?,
-        None => return Err(StdError::generic_err("Transaction not found")),
+        Some(data) =>
+            from_utf8(&data).map_err(|_| StdError::generic_err("Error parsing transaction data"))?,
+        None => {
+            return Err(StdError::generic_err("Transaction not found"));
+        }
     };
 
     let transaction: Transaction = serde_json::from_str(transaction)?;
@@ -185,6 +196,7 @@ fn query_offset_transaction<S: Storage, A: Api, Q: Querier>(
         offset_amount: transaction.offset_amount,
         carbon_credit_type: transaction.carbon_credit_type,
         timestamp: transaction.timestamp,
+        carbon_credit_type: transaction.carbon_credit_type,
+        timestamp: transaction.timestamp,
     })
 }
-
