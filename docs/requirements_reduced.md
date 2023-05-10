@@ -26,7 +26,7 @@ Testing and Quality Assurance: Establish a rigorous testing process, including u
 
 Deployment and Infrastructure: Set up a scalable and secure infrastructure for deploying the system, using cloud-based solutions or dedicated servers, with proper backup and recovery mechanisms in place.
 
-Version Control and Continuous Integration: Use version control systems (e.g., Git) and continuous integration (CI) tools to streamline development, deployment, and updates, ensuring efficient collaboration and code management.
+Version Control and Continuous Integration: Use version control systems (e.g., Git) and continuous integration (CI) tools to streamline development, depaloyment, and updates, ensuring efficient collaboration and code management.
 
 Documentation and Support: Provide comprehensive documentation for the Carbon Offset API, smart contracts, and system architecture, as well as dedicated support for partner applications during integration and ongoing usage.
 
