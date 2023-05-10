@@ -27,7 +27,7 @@ Install dependencies:
 npm install
 ```
 
-🏃‍♀️ Usage
+## 🏃‍♀️ Usage
 Before starting the application, ensure you have set up the necessary environment variables. See the Environment Variables section for more details.
 
 To start the application:
@@ -36,7 +36,7 @@ To start the application:
 npm start
 ```
 
-🌍 Environment Variables
+## 🌍 Environment Variables
 Please set up the following environment variables:
 
 
@@ -45,7 +45,7 @@ DATABASE_URL: Your database connection string.
 COSMOS_API_KEY: Your Cosmos API key.
 Please refer to the Configuration section for more details on how to set up these environment variables.
 
-🧪 Testing
+## 🧪 Testing
 To run unit tests:
 ```bash
 npm test
@@ -55,15 +55,17 @@ To run integration tests:
 ```bash
 npm run test:integration
 ```
-🔧 Configuration
+## 🔧 Configuration
 You can configure the application using environment variables or a .env file at the root of your project. Here is an example .env file:
 
-
+```bash
 REGEN_API_KEY=your_regen_api_key
 DATABASE_URL=your_database_url
 COSMOS_API_KEY=your_cosmos_api_key
-🤝 Contribution
+```
+
+## 🤝 Contribution
 Contributions are always welcome!
 
-🆘 Support
+## 🆘 Support
 If you encounter any issues or have questions, please open a GitHub Issue
