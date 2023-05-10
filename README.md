@@ -63,7 +63,7 @@ REGEN_API_KEY=your_regen_api_key
 DATABASE_URL=your_database_url
 COSMOS_API_KEY=your_cosmos_api_key
 🤝 Contribution
-Contributions are always welcome! Please read our contributing guide to learn about our development process, how to propose bugfixes and improvements, and how to build and test your changes to Carbon-Cosmos.
+Contributions are always welcome!
 
 🆘 Support
 If you encounter any issues or have questions, please open a GitHub Issue
