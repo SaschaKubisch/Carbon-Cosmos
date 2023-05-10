@@ -2,28 +2,28 @@ import React, { useState } from 'react';
 import axios from 'axios';
 
 function Home() {
-  const [walletAddress, setWalletAddress] = useState('');
   const [receiverAddress, setReceiverAddress] = useState('');
   const [amount, setAmount] = useState(0);
   const [network, setNetwork] = useState(0);
   const [offsetType, setOffsetType] = useState('transaction');
   const [offsetAmount, setOffsetAmount] = useState(0);
+  const [carbonCreditType, setCarbonCreditType] = useState('regen');
 
   const handleOffset = async () => {
     try {
-      const response = await axios.post('http://localhost:5000/api/offset', {
-        walletAddress,
+      const response = await axios.post('http://localhost:5000/api/offset-transaction', {
         receiverAddress,
         amount,
-        network,
+        receiverNetwork: network,
         offsetType,
         offsetAmount,
+        carbonCreditType,
       });
 
-      if (response.data.success) {
-        alert('Transaction successful! Offset Receipt: ' + response.data.receiptId);
+      if (response.data.status === 'success') {
+        alert('Offset transaction initiated! Transaction ID: ' + response.data.transactionId);
       } else {
-        alert('Transaction failed: ' + response.data.message);
+        alert('Offset transaction failed: ' + response.data.message);
       }
     } catch (error) {
       console.error('Error during offset:', error);
@@ -33,10 +33,6 @@ function Home() {
   return (
     <div>
       <h1>Carbon Offset Application</h1>
-      <div>
-        <label>Wallet Address:</label>
-        <input type="text" value={walletAddress} onChange={(e) => setWalletAddress(e.target.value)} />
-      </div>
       <div>
         <label>Receiver Address:</label>
         <input type="text" value={receiverAddress} onChange={(e) => setReceiverAddress(e.target.value)} />
@@ -62,6 +58,10 @@ function Home() {
           <input type="number" value={offsetAmount} onChange={(e) => setOffsetAmount(e.target.value)} />
         </div>
       )}
+      <div>
+        <label>Carbon Credit Type:</label>
+        <input type="text" value={carbonCreditType} onChange={(e) => setCarbonCreditType(e.target.value)} />
+      </div>
       <button onClick={handleOffset}>Offset Carbon</button>
     </div>
   );
