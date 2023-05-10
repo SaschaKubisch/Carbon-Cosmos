@@ -20,12 +20,13 @@ Clone the repository:
 ```bash
 git clone https://github.com/SaschaKubisch/Carbon-Cosmos.git
 cd Carbon-Cosmos
-```bash
+```
+
 Install dependencies:
 
 ```bash
 npm install
-```bash
+```
 
 🏃‍♀️ Usage
 Before starting the application, ensure you have set up the necessary environment variables. See the Environment Variables section for more details.
@@ -34,7 +35,7 @@ To start the application:
 
 ```bash
 npm start
-```bash
+```
 
 🌍 Environment Variables
 Please set up the following environment variables:
@@ -49,12 +50,12 @@ Please refer to the Configuration section for more details on how to set up thes
 To run unit tests:
 ```bash
 npm test
-```bash
+```
 To run integration tests:
 
 ```bash
 npm run test:integration
-```bash
+```
 🔧 Configuration
 You can configure the application using environment variables or a .env file at the root of your project. Here is an example .env file:
 
