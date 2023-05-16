@@ -31,3 +31,100 @@ Version Control and Continuous Integration: Use version control systems (e.g., G
 Documentation and Support: Provide comprehensive documentation for the Carbon Offset API, smart contracts, and system architecture, as well as dedicated support for partner applications during integration and ongoing usage.
 
 By addressing these functional and technical requirements, you can create a robust and versatile B2B carbon offsetting solution that can be easily integrated into various applications' frontend systems, promoting sustainable practices across different industries.
+
+On-Chain (Stored on IPFS and referenced in the blockchain):
+CarbonCreditRegistry: This can be a smart contract that manages the registration and validity of carbon credits. Storing this on-chain provides transparency and trust in the available carbon credits. Each carbon credit could have:
+
+CarbonCreditID (Unique ID)
+CarbonCreditName
+CarbonCreditDescription
+WrappedTokenAddress (Address of the wrapped Regen NCT token)
+OffsetTransactions: This information could be stored on-chain to provide transparency and immutability. Each transaction could have:
+
+TransactionID (Unique ID)
+ReceiverAddress
+Amount
+ReceiverNetwork
+OffsetType
+OffsetAmount
+CarbonCreditID (Referenced from the CarbonCreditRegistry)
+Timestamp
+Status (Pending, Completed, Failed)
+Receipts: Receipts for each transaction, including carbon offset proof, transaction type, and transaction details, can be stored on-chain. This provides irrefutable proof of offset transactions. Each receipt could have:
+
+ReceiptID (Unique ID)
+TransactionID (Referenced from the OffsetTransactions)
+ReceiptData (This could be a JSON object or other structure that contains the necessary data)
+NFTAddress (Interchain NFT address)
+Off-Chain (Stored in a traditional database):
+Users Table: This table stores information about the users, which doesn't necessarily need to be on the blockchain.
+
+UserID (Primary Key)
+Username
+Email
+Password (hashed)
+UserAddress (Blockchain address)
+Analytics Table: This table stores the monitoring and analytics data, which doesn't need to be on-chain.
+
+AnalyticsID (Primary Key)
+Metric (Carbon offset amount, API usage, etc.)
+Value (Metric value)
+Timestamp
+
+Folder structure:
+Carbon-Cosmos/
+├── client/ 
+│   ├── public/
+│   │   ├── index.html
+│   │   ├── favicon.ico
+│   │   └── manifest.json
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── App.js
+│   │   │   ├── OffsetTransactionForm.js
+│   │   │   ├── CarbonCreditsList.js
+│   │   │   └── UserTransactions.js
+│   │   ├── services/
+│   │   │   └── api.js
+│   │   ├── App.css
+│   │   ├── index.js
+│   │   └── index.css
+│   ├── package.json
+│   └── package-lock.json
+├── server/
+│   ├── api/
+│   │   ├── routes/
+│   │   │   ├── transactionRoutes.js
+│   │   │   └── userRoutes.js
+│   │   ├── controllers/
+│   │   │   ├── transactionController.js
+│   │   │   └── userController.js
+│   │   └── middleware/
+│   │       ├── auth.js
+│   │       └── error.js
+│   ├── blockchain/
+│   │   ├── carbonCreditContract.js
+│   │   ├── transactionContract.js
+│   │   └── receiptContract.js
+│   ├── db/
+│   │   ├── models/
+│   │   │   ├── User.js
+│   │   │   └── Analytics.js
+│   │   ├── index.js
+│   │   └── sequelize.js
+│   ├── services/
+│   │   ├── transactionService.js
+│   │   └── userService.js
+│   ├── utils/
+│   │   └── helpers.js
+│   ├── app.js
+│   ├── package.json
+│   └── package-lock.json
+├── tests/
+│   ├── transaction.test.js
+│   └── user.test.js
+├── .env
+├── .gitignore
+├── package.json
+├── package-lock.json
+└── README.md
