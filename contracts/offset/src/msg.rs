@@ -1,13 +1,13 @@
-use cosmwasm_std::HumanAddr;
-use schemars::JsonSchema;
+use cosmwasm_std::{Binary, HumanAddr};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 pub struct InitMsg {
-    pub carbon_credits_pool: HumanAddr,
+    pub carbon_credits_pool: Vec<CarbonCreditsPool>,
 }
 
-#[derive(Serialize, Deserialize, JsonSchema)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
+#[serde(rename_all = "snake_case")]
 pub enum HandleMsg {
     OffsetTransaction {
         receiver_address: HumanAddr,
@@ -28,21 +28,18 @@ pub enum HandleMsg {
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
-pub enum OffsetType {
-    Transaction,
-    Custom,
-}
-
-#[derive(Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "snake_case")]
 pub enum QueryMsg {
     CarbonCreditsPool {},
-    OffsetTransaction { transaction_id: String },
+    OffsetTransaction {
+        transaction_id: String,
+    },
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
-pub struct CarbonCreditsPoolResponse {
-    pub amount: u128,
+pub struct CarbonCreditsPool {
     pub carbon_credit_type: String,
+    pub balance: u128,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
@@ -57,3 +54,8 @@ pub struct OffsetTransactionResponse {
     pub timestamp: String,
 }
 
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
+pub enum OffsetType {
+    Direct,
+    Indirect,
+}

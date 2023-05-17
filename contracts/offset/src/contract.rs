@@ -11,10 +11,10 @@ use cosmwasm_std::{
     StdResult,
     Storage,
 };
-use cosmwasm_storage::{ PrefixedStorage, ReadonlyPrefixedStorage };
+use cosmwasm_storage::{PrefixedStorage, ReadonlyPrefixedStorage};
 use std::str::from_utf8;
 
-use crate::msg::{ HandleMsg, InitMsg, OffsetTransactionResponse, QueryMsg };
+use crate::msg::{HandleMsg, InitMsg, OffsetTransactionResponse, QueryMsg};
 use crate::state::{
     config,
     config_read,
@@ -28,7 +28,7 @@ use crate::state::{
 pub fn init<S: Storage, A: Api, Q: Querier>(
     deps: &mut Extern<S, A, Q>,
     _env: Env,
-    msg: InitMsg
+    msg: InitMsg,
 ) -> StdResult<InitResponse> {
     let config_data = config::Config {
         carbon_credits_pool: msg.carbon_credits_pool.clone(),
@@ -42,7 +42,7 @@ pub fn init<S: Storage, A: Api, Q: Querier>(
 pub fn handle<S: Storage, A: Api, Q: Querier>(
     deps: &mut Extern<S, A, Q>,
     env: Env,
-    msg: HandleMsg
+    msg: HandleMsg,
 ) -> StdResult<HandleResponse> {
     match msg {
         HandleMsg::OffsetTransaction {
@@ -52,17 +52,16 @@ pub fn handle<S: Storage, A: Api, Q: Querier>(
             offset_type,
             offset_amount,
             carbon_credit_type,
-        } =>
-            handle_offset_transaction(
-                deps,
-                env,
-                receiver_address,
-                amount,
-                receiver_network,
-                offset_type,
-                offset_amount,
-                carbon_credit_type
-            ),
+        } => handle_offset_transaction(
+            deps,
+            env,
+            receiver_address,
+            amount,
+            receiver_network,
+            offset_type,
+            offset_amount,
+            carbon_credit_type,
+        ),
         HandleMsg::BurnCarbonCredits { amount, carbon_credit_type } => {
             handle_burn_carbon_credits(deps, amount, carbon_credit_type)
         }
@@ -75,7 +74,7 @@ pub fn handle<S: Storage, A: Api, Q: Querier>(
 pub fn query<S: Storage, A: Api, Q: Querier>(
     deps: &Extern<S, A, Q>,
     _env: Env,
-    msg: QueryMsg
+    msg: QueryMsg,
 ) -> StdResult<Binary> {
     match msg {
         QueryMsg::CarbonCreditsPool {} => to_binary(&query_carbon_credits_pool(deps)?),
@@ -93,8 +92,9 @@ fn handle_offset_transaction<S: Storage, A: Api, Q: Querier>(
     receiver_network: u32,
     offset_type: OffsetType,
     offset_amount: Option<f64>,
-    carbon_credit_type: String
-) -> StdResult<HandleResponse> {
+    carbon_credit_type: String,
+) ->
+StdResult<HandleResponse> {
     // Perform transaction offset logic
     // ...
 
@@ -178,7 +178,7 @@ fn query_offset_transaction<S: Storage, A: Api, Q: Querier>(
     let tx_store = ReadonlyPrefixedStorage::new(CONFIG_KEY, deps.storage);
     let data = tx_store.get(transaction_id.as_bytes());
     let transaction = match data {
-        Some(data) =>
+        Some(data) => 
             from_utf8(&data).map_err(|_| StdError::generic_err("Error parsing transaction data"))?,
         None => {
             return Err(StdError::generic_err("Transaction not found"));
@@ -194,8 +194,6 @@ fn query_offset_transaction<S: Storage, A: Api, Q: Querier>(
         receiver_network: transaction.receiver_network,
         offset_type: transaction.offset_type,
         offset_amount: transaction.offset_amount,
-        carbon_credit_type: transaction.carbon_credit_type,
-        timestamp: transaction.timestamp,
         carbon_credit_type: transaction.carbon_credit_type,
         timestamp: transaction.timestamp,
     })
