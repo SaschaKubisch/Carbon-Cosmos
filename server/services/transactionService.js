@@ -54,6 +54,24 @@ class TransactionService {
 
         return result;
     }
+
+    async getUserTransactions(contractAddress, userAddress) {
+        const result = await this.client.queryContractSmart(contractAddress, {
+            user_transactions: { user_address: userAddress },
+        });
+
+        return result;
+    }
+
+    async getUserCarbonCreditBalance(contractAddress, userAddress) {
+        const result = await this.client.queryContractSmart(contractAddress, {
+            user_carbon_credit_balance: { user_address: userAddress },
+        });
+
+        return result;
+    }
+}
+
 }
 
 module.exports = TransactionService;
