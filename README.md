@@ -1,7 +1,7 @@
  # Carbon-Cosmos
 
 
-Carbon-Cosmos is designed to facilitate carbon offsetting transactions using the interoperable Cosmos Blockchain Ecosystem. The project is using the ICS-721 Multichain NFT standard for offset receipt generation and is build with Cosmos SDK, Regen Network, and Node.js, creating a robust and versatile solution for individuals and businesses to offset their carbon footprints through blockchain transactions on multiple blockchains.
+Carbon-Cosmos is designed to facilitate carbon offsetting transactions on the interoperable Cosmos Blockchain Ecosystem. The project is using the ICS-721 Multichain NFT standard for offset receipt generation and is build with Cosmos SDK, Regen Network, and Node.js, creating a robust and versatile solution for individuals and businesses to offset their carbon footprints through blockchain transactions on multiple blockchains.
 
 ## 🚀 Features
 
