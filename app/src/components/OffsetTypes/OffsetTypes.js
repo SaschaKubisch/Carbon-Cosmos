@@ -1,12 +1,43 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 const OffsetTypes = () => {
-  // Add your logic for selecting offset types here
+  const [selectedOffsetType, setSelectedOffsetType] = useState('');
+
+  const handleOffsetTypeChange = (e) => {
+    setSelectedOffsetType(e.target.value);
+  };
 
   return (
     <div>
-      {/* Add your UI elements for selecting offset types */}
       <h1>Offset Types</h1>
+      <div>
+        <label>
+          <input
+            type="radio"
+            value="transaction"
+            checked={selectedOffsetType === 'transaction'}
+            onChange={handleOffsetTypeChange}
+          />
+          Transaction
+        </label>
+      </div>
+      <div>
+        <label>
+          <input
+            type="radio"
+            value="custom"
+            checked={selectedOffsetType === 'custom'}
+            onChange={handleOffsetTypeChange}
+          />
+          Custom
+        </label>
+      </div>
+      {selectedOffsetType === 'custom' && (
+        <div>
+          <label>Offset Amount:</label>
+          <input type="number" />
+        </div>
+      )}
     </div>
   );
 };

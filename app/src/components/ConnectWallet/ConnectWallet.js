@@ -1,35 +1,25 @@
 import React, { useState } from 'react';
-import WalletConnect from '@walletconnect/client';
-import QRCodeModal from '@walletconnect/qrcode-modal';
 
 const ConnectWallet = () => {
   const [walletAddress, setWalletAddress] = useState('');
   const [connected, setConnected] = useState(false);
-  const [walletConnect, setWalletConnect] = useState(null);
 
-  const connectWallet = async () => {
-    if (!walletConnect) {
-      const connector = new WalletConnect({ bridge: 'https://bridge.walletconnect.org' });
-      setWalletConnect(connector);
-
-      if (!connector.connected) {
-        await connector.createSession();
-        QRCodeModal.open(connector.uri, () => {
-          console.log('QR Code Modal closed');
+  const connectWallet = () => {
+    if (typeof window.ethereum !== 'undefined') {
+      window.ethereum.enable()
+        .then((accounts) => {
+          if (accounts.length > 0) {
+            setWalletAddress(accounts[0]);
+            setConnected(true);
+          } else {
+            alert('No accounts found. Please create an account first.');
+          }
+        })
+        .catch((error) => {
+          console.error('Failed to connect wallet:', error);
         });
-      }
-
-      connector.on('connect', (error, payload) => {
-        if (error) {
-          throw error;
-        }
-
-        const { accounts } = payload.params[0];
-        setWalletAddress(accounts[0]);
-        setConnected(true);
-
-        QRCodeModal.close();
-      });
+    } else {
+      alert('Wallet connection is not supported on this device/browser. Please use a compatible browser with wallet support.');
     }
   };
 
@@ -38,7 +28,7 @@ const ConnectWallet = () => {
       {!connected ? (
         <div>
           <h1>Connect Wallet</h1>
-          <button onClick={connectWallet}>Connect with Trust Wallet</button>
+          <button onClick={connectWallet}>Connect with Wallet</button>
         </div>
       ) : (
         <div>
