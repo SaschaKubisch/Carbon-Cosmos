@@ -1,28 +1,28 @@
 const { DataTypes } = require('sequelize');
 const db = require('../db');
 
-const User = db.define('User', {
+const CarbonCredit = db.define('CarbonCredit', {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
     primaryKey: true
   },
-  username: {
+  carbonCreditID: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true
+  },
+  carbonCreditName: {
     type: DataTypes.STRING,
     allowNull: false
   },
-  email: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    unique: true,
-    validate: {
-      isEmail: true
-    }
+  carbonCreditDescription: {
+    type: DataTypes.STRING
   },
-  password: {
+  wrappedTokenAddress: {
     type: DataTypes.STRING,
     allowNull: false
   }
 });
 
-module.exports = User;
+module.exports = CarbonCredit;

@@ -18,4 +18,12 @@ router.post('/create', isAuthenticated, transactionController.createTransaction)
 // Route to get a transaction by its ID
 router.get('/:transactionId', isAuthenticated, transactionController.getTransactionById);
 
+// Additional routes from the existing code
+
+router.post('/create', isAuthenticated, transactionController.createTransaction);
+router.get('/:transactionId', isAuthenticated, transactionController.getTransaction);
+router.post('/add-carbon-credits', isAuthenticated, transactionController.addCarbonCreditsToPool);
+router.get('/carbon-credits-pool', isAuthenticated, transactionController.getCarbonCreditsPool);
+router.post('/burn-carbon-credits', isAuthenticated, transactionController.burnCarbonCredits);
+
 module.exports = router;

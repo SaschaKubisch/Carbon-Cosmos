@@ -6,7 +6,7 @@ const createUser = async (userData) => {
     return user;
   } catch (error) {
     console.error(`Could not create user: ${error}`);
-    return null;
+    throw new Error('Failed to create user');
   }
 };
 
@@ -16,7 +16,7 @@ const getUserById = async (id) => {
     return user;
   } catch (error) {
     console.error(`Could not find user: ${error}`);
-    return null;
+    throw new Error('Failed to get user');
   }
 };
 
@@ -30,7 +30,7 @@ const updateUser = async (id, updates) => {
     return updatedUser;
   } catch (error) {
     console.error(`Could not update user: ${error}`);
-    return null;
+    throw new Error('Failed to update user');
   }
 };
 
@@ -44,7 +44,7 @@ const deleteUser = async (id) => {
     return true;
   } catch (error) {
     console.error(`Could not delete user: ${error}`);
-    return false;
+    throw new Error('Failed to delete user');
   }
 };
 

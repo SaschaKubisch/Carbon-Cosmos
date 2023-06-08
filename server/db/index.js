@@ -1,15 +1,9 @@
 const { Sequelize } = require('sequelize');
 
-// Option 1: Passing a connection URI
+// Define the connection URI or parameters separately
 const sequelize = new Sequelize('postgres://user:pass@localhost:5432/dbname');
 
-// Option 2: Passing parameters separately (other dialects)
-// const sequelize = new Sequelize('database', 'username', 'password', {
-//   host: 'localhost',
-//   dialect: /* one of 'mysql' | 'mariadb' | 'postgres' | 'mssql' */
-// });
-
-// testing the connection
+// Testing the connection
 (async () => {
   try {
     await sequelize.authenticate();
