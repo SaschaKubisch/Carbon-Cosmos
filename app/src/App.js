@@ -7,6 +7,9 @@ import Home from './pages/Home';
 import Offset from './pages/Offset';
 import Receipt from './pages/Receipt';
 import Error from './pages/Error';
+import ConnectWallet from './components/ConnectWallet';
+import TransactionDetails from './components/TransactionDetails';
+import OffsetTypes from './components/OffsetTypes';
 
 import { CarbonOffsetProvider } from './contexts/CarbonOffsetContext';
 
@@ -26,6 +29,15 @@ function App() {
           </Route>
           <Route path="/receipt">
             <Receipt />
+          </Route>
+          <Route path="/connect-wallet">
+            <ConnectWallet />
+          </Route>
+          <Route path="/transaction-details">
+            <TransactionDetails />
+          </Route>
+          <Route path="/offset-types">
+            <OffsetTypes />
           </Route>
           <Route path="*">
             <Error />
