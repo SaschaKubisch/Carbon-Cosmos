@@ -16,6 +16,6 @@ router.post('/select-credit', isAuthenticated, transactionController.selectCredi
 router.post('/create', isAuthenticated, transactionController.createTransaction);
 
 // Route to get a transaction by its ID
-router.get('/:transactionId', isAuthenticated, transactionController.getTransaction);
+router.get('/:transactionId', isAuthenticated, transactionController.getTransactionById);
 
 module.exports = router;
