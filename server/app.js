@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
-const db = require('./db/index');
+const db = require('./db');
 
 // Import routes
 const userRoutes = require('./api/routes/userRoutes');
@@ -30,11 +30,14 @@ app.use(function(err, req, res, next) {
 });
 
 // Connect to the database and start the server
-db.sequelize.sync().then(() => {
-  const port = process.env.PORT || 3000;
-  app.listen(port, () => {
-    console.log(`Server is running on port ${port}.`);
+db.authenticate()
+  .then(() => {
+    console.log('Database connection has been established successfully.');
+    const port = process.env.PORT || 3000;
+    app.listen(port, () => {
+      console.log(`Server is running on port ${port}.`);
+    });
+  })
+  .catch((error) => {
+    console.error('Unable to connect to the database:', error);
   });
-}).catch((error) => {
-  console.error('Unable to connect to the database:', error);
-});
