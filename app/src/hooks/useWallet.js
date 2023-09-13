@@ -1,68 +1,34 @@
-import { useState, useEffect } from 'react';
-import Web3 from 'web3';
-import axios from 'axios';
+import { useState } from 'react';
+import { connectWallet, disconnectWallet } from '../services/walletAPI';
 
-const useWallet = () => {
-  const [web3, setWeb3] = useState(null);
-  const [accounts, setAccounts] = useState([]);
+function useWallet() {
+  const [wallet, setWallet] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [transactions, setTransactions] = useState(null);
 
-  const connectWallet = async () => {
-    if (window.ethereum) {
-      const web3Instance = new Web3(window.ethereum);
-      setWeb3(web3Instance);
-
-      try {
-        const accounts = await window.ethereum.enable();
-        setAccounts(accounts);
-      } catch (err) {
-        setError(err.message);
-      }
-    } else {
-      setError("Ethereum browser extension is not installed");
-    }
-  };
-
-  const sendFunds = async (receiverAddress, amount, receiverNetwork, offsetType, offsetAmount) => {
+  const connect = async () => {
     setLoading(true);
     try {
-      const transactionData = {
-        receiverAddress,
-        amount,
-        receiverNetwork,
-        offsetType,
-        offsetAmount,
-      };
-      const response = await axios.post('https://carbon-offset-api.com/offset-transaction', transactionData);
-      return response.data;
+      const walletData = await connectWallet();
+      setWallet(walletData);
     } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+      setError(err);
     }
+    setLoading(false);
   };
 
-  useEffect(() => {
-    if (accounts && accounts.length > 0) {
-      const fetchTransactions = async () => {
-        setLoading(true);
-        try {
-          const response = await axios.get(`https://carbon-offset-api.com/transactions/${accounts[0]}`);
-          setTransactions(response.data);
-        } catch (err) {
-          setError(err.message);
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      fetchTransactions();
+  const disconnect = async () => {
+    setLoading(true);
+    try {
+      await disconnectWallet();
+      setWallet(null);
+    } catch (err) {
+      setError(err);
     }
-  }, [accounts]);
+    setLoading(false);
+  };
 
-  return { connectWallet, sendFunds, transactions, loading, error };
-};
+  return { wallet, loading, error, connect, disconnect };
+}
 
 export default useWallet;
