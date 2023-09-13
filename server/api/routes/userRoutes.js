@@ -18,7 +18,10 @@ router.get('/profile', isAuthenticated, userController.getProfile);
 // Route to update a user's profile
 router.put('/profile', isAuthenticated, userController.updateProfile);
 
-// Route to get a user's transactions
-router.get('/transactions', isAuthenticated, userController.getUserTransactions);
+// Route to get a user's transaction history
+router.get('/transaction-history', isAuthenticated, userController.getUserTransactionHistory);
+
+// Route to get a user's carbon credit balance
+router.get('/carbon-credit-balance', isAuthenticated, userController.getUserCarbonCreditBalance);
 
 module.exports = router;
